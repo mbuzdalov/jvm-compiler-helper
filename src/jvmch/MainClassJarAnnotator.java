@@ -73,22 +73,23 @@ public class MainClassJarAnnotator extends Module {
             Manifest manifest;
             try (JarInputStream input = new JarInputStream(new ByteArrayInputStream(jarFile))) {
                 manifest = input.getManifest();
+                if (manifest != null) {
+                    Attributes attributes = manifest.getMainAttributes();
+                    if (attributes != null) {
+                        String ofMain = attributes.getValue(Attributes.Name.MAIN_CLASS);
+                        if (ofMain != null && !forceOverwrite) {
+                            // No --force-overwrite is specified.
+                            return true;
+                        }
+                    }
+                }
+
                 JarEntry current;
                 while ((current = input.getNextJarEntry()) != null) {
                     if (isMainClass(input)) {
                         mainClasses.add(getName(current));
                     }
                     input.closeEntry();
-                }
-            }
-            if (manifest != null) {
-                Attributes attributes = manifest.getMainAttributes();
-                if (attributes != null) {
-                    String ofMain = attributes.getValue(Attributes.Name.MAIN_CLASS);
-                    if (ofMain != null && !forceOverwrite) {
-                        // No --force-overwrite is specified.
-                        return true;
-                    }
                 }
             }
             if (mainClasses.size() == 0) {
