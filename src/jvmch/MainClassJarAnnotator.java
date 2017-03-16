@@ -75,12 +75,10 @@ public class MainClassJarAnnotator extends Module {
                 manifest = input.getManifest();
                 if (manifest != null) {
                     Attributes attributes = manifest.getMainAttributes();
-                    if (attributes != null) {
-                        String ofMain = attributes.getValue(Attributes.Name.MAIN_CLASS);
-                        if (ofMain != null && !forceOverwrite) {
-                            // No --force-overwrite is specified.
-                            return true;
-                        }
+                    String ofMain = attributes.getValue(Attributes.Name.MAIN_CLASS);
+                    if (ofMain != null && !forceOverwrite) {
+                        // No --force-overwrite is specified.
+                        return true;
                     }
                 }
 
