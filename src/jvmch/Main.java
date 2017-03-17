@@ -61,7 +61,8 @@ public class Main {
 
         for (BooleanSupplier r : commandsToRun) {
             if (!r.getAsBoolean()) {
-                break;
+                System.exit(1);
+                return;
             }
         }
     }

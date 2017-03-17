@@ -240,7 +240,7 @@ public class MainClassJarAnnotator extends Module {
             }
             return true;
         } catch (IOException e) {
-            System.err.println("[Message] " + e.getMessage() + " [/Message]");
+            System.out.println(e.getMessage());
             e.printStackTrace();
             return false;
         }
