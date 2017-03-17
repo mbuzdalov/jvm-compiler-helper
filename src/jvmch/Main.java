@@ -21,7 +21,7 @@ public class Main {
         System.exit(1);
     }
 
-    private static <T> int indexOfSharpOrLength(T[] array, int from) {
+    private static int indexOfSharpOrLength(String[] array, int from) {
         for (int i = from; i < array.length; ++i) {
             if (array[i].equals("#")) {
                 return i;
@@ -44,7 +44,7 @@ public class Main {
             Module current = modules.get(args[cmd]);
             if (current == null) {
                 System.err.println("Error: command line argument no. " + (cmd + 1)
-                        + ", which is '" + args[cmd] + "' does not name a module name.");
+                        + ", which is '" + args[cmd] + "' does not name a module.");
                 printUsageAndExit(modules);
                 return;
             }
