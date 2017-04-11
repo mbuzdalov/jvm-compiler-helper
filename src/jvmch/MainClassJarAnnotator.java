@@ -220,6 +220,7 @@ public class MainClassJarAnnotator extends Module {
                 manifest = new Manifest();
             }
             System.out.println("Setting the Main-Class attribute to " + mainClassName);
+            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
             manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, mainClassName);
 
             try (FileOutputStream fileOut = new FileOutputStream(targetJarFileName);

@@ -33,6 +33,8 @@ public class Main {
     public static void main(String[] args) {
         Map<String, Module> modules = new HashMap<>();
         modules.put("annotate-jar-with-main-class-attribute", new MainClassJarAnnotator());
+        modules.put("compile-java-files", new JavaCompiler());
+        modules.put("merge-jar-files", new JarFilesMerger());
 
         if (args.length == 0) {
             printUsageAndExit(modules);

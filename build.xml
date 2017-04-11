@@ -1,14 +1,32 @@
 <project>
+    <property file="build.properties"/>
+    <typedef resource="org/jetbrains/kotlin/ant/antlib.xml"
+             classpath="${kotlin.home}/lib/kotlin-ant.jar"/>
+
     <target name="clean">
         <delete dir="build"/>
     </target>
 
     <target name="compile">
         <mkdir dir="build"/>
-        <javac srcdir="src" destdir="build"/>
+        <javac srcdir="src" destdir="build">
+            <classpath>
+                <pathelement path="${kotlin.home}/lib/"/>
+            </classpath>
+            <withKotlin/>
+        </javac>
     </target>
 
     <target name="jar" depends="compile">
-        <jar destfile="jvmch.jar" basedir="build"/>
+        <jar destfile="jvmch.jar" basedir="build">
+            <archives>
+                <zips>
+                    <fileset dir="${kotlin.home}" includes="**/kotlin-runtime.jar"/>
+                </zips>
+            </archives>
+            <manifest>
+                <attribute name="Main-Class" value="jvmch.Main"/>
+            </manifest>
+        </jar>
     </target>
 </project>
