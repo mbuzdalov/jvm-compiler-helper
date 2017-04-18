@@ -2,6 +2,7 @@ package jvmch
 
 import javax.tools.ToolProvider
 import java.io.*
+import java.util.*
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
 
@@ -10,8 +11,7 @@ import java.util.jar.JarOutputStream
  */
 class JavaCompiler : Module() {
     private val COPY_BUFFER_SIZE = 0x10000
-
-    private class WrongFileException(s: String) : Exception(s)
+    private val rng = Random(239L)
 
     override fun checkArgs(args: Array<String>, argumentOffset: Int): Boolean {
         return args.size >= 3
@@ -43,9 +43,6 @@ class JavaCompiler : Module() {
         } catch (e: IOException) {
             e.printStackTrace()
             return 100
-        } catch (e: WrongFileException) {
-            e.printStackTrace()
-            return 101
         }
     }
 
@@ -114,7 +111,11 @@ class JavaCompiler : Module() {
                 }
                 tokenizer.nextToken()
             }
-            throw WrongFileException(file.name)
+            var randomName = ""
+            for (i in 0..10) {
+                randomName += (rng.nextInt(26) + 'a'.toInt()).toChar()
+            }
+            return packageName + "\$\$__" + randomName
         }
     }
 
