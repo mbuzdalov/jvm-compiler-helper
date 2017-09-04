@@ -32,8 +32,20 @@ public class JavaCompiler extends Module {
 
     @Override
     public String getUsage() {
-        return "compiles Java source files given. Arguments:\n"
-                + "        <temporary directory> <resulting jar file> <source files>";
+        return "compiles Java source files given.\n"
+                + "            The arguments are: <temporary directory> <resulting jar file> <source files>";
+    }
+
+    private void rmrf(File file) {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    rmrf(f);
+                }
+            }
+        }
+        file.delete();
     }
 
     private int compile(File tempDir, File file, File[] sources) {
@@ -63,6 +75,9 @@ public class JavaCompiler extends Module {
     }
 
     private File[] copyFiles(File dir, File[] files) throws IOException {
+        if (dir.exists()) {
+            rmrf(dir);
+        }
         dir.mkdirs();
         File[] rv = new File[files.length];
         for (int i = 0; i < files.length; ++i) {

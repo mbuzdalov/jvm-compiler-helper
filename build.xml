@@ -1,8 +1,4 @@
 <project>
-    <presetdef name="javac">
-        <javac includeantruntime="false" />
-    </presetdef>
-
     <property file="build.properties"/>
 
     <target name="clean">
@@ -12,7 +8,7 @@
 
     <target name="compile">
         <mkdir dir="build"/>
-        <javac srcdir="src" destdir="build"/>
+        <javac srcdir="src" destdir="build" includeantruntime="false"/>
     </target>
 
     <target name="jar" depends="compile">

@@ -40,8 +40,8 @@ public class JarFilesMerger extends Module {
 
     @Override
     public String getUsage() {
-        return "merges several JAR files, manifest file isn't copied. The arguments are:\n"
-                + "        <target-jar-name> <source-jar-name-1> [<source-jar-name-2> [...]]";
+        return "merges several JAR files, manifest file isn't copied.\n"
+                + "            The arguments are: <target-jar-name> <source-jar-name-1> [<source-jar-name-2> [...]]";
     }
 
     @Override
