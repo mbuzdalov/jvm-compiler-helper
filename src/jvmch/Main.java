@@ -13,7 +13,7 @@ public class Main {
     private static void printUsageAndExit(Map<String, Module> modules) {
         PrintStream err = System.err;
 
-        err.println("Usage: " + Main.class.getCanonicalName() + " <command> [command-arguments] ['#' <command> [command-arguments]]*");
+        err.println("Usage: " + Main.class.getCanonicalName() + " <command> [command-arguments] ['--then' <command> [command-arguments]]*");
         err.println("    where <command> is one of:");
         for (Map.Entry<String, Module> entry : modules.entrySet()) {
             err.println("        " + entry.getKey() + ": " + entry.getValue().getUsage());
@@ -23,7 +23,7 @@ public class Main {
 
     private static int indexOfSharpOrLength(String[] array, int from) {
         for (int i = from; i < array.length; ++i) {
-            if (array[i].equals("#")) {
+            if (array[i].equals("--then")) {
                 return i;
             }
         }

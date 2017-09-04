@@ -49,7 +49,7 @@ function run_test_01 {
     echo -n "  Compiling aplusb.java using JVMCH..." && mkdir temp && \
     java -jar ../$JAR \
         compile-java-files temp $JFN aplusb.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
         && echo " done." && \
     echo -n "  Running the result... " && local RESULT=`echo "3 4" | java -jar $JFN` && \
     local EXPECTED=`echo "7"` && assert_equals "$EXPECTED" "$RESULT" "prints 7 as expected" && \
@@ -63,7 +63,7 @@ function run_test_02 {
     echo -n "  Compiling print8.java using JVMCH..." && mkdir temp && \
     java -jar ../$JAR \
         compile-java-files temp $JFN print8.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
         && echo " done." && \
     echo -n "  Running the result... " && local RESULT=`java -jar $JFN` && \
     local EXPECTED=`echo "8"` && assert_equals "$EXPECTED" "$RESULT" "prints 8 as expected" && \
@@ -77,7 +77,7 @@ function run_test_03 {
     echo -n "  Compiling print8.java => print9.class using JVMCH..." && mkdir temp && \
     java -jar ../$JAR \
         compile-java-files temp $JFN print8.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
         && echo " done." && \
     echo -n "  Running the result... " && local RESULT=`java -jar $JFN` && \
     local EXPECTED=`echo "9"` && assert_equals "$EXPECTED" "$RESULT" "prints 9 as expected" && \
@@ -91,7 +91,7 @@ function run_test_04 {
     echo -n "  Compiling print8.java => print9.class using JVMCH..." && mkdir temp && \
     java -jar ../$JAR \
         compile-java-files temp $JFN print8.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
         && echo " done." && \
     echo -n "  Running the result... " && local RESULT=`java -jar $JFN` && \
     local EXPECTED=`echo "9"` && assert_equals "$EXPECTED" "$RESULT" "prints 9 as expected" && \
@@ -105,7 +105,7 @@ function run_test_05 {
     echo -n "  Compiling print8.java => print9.class using JVMCH..." && mkdir temp && \
     local RESULT=`expect_exit_code 1 java -jar ../$JAR \
         compile-java-files temp $JFN print8.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN` && \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN` && \
     assert_equals "$NO_MAIN_METHOD_MESSAGE" "$RESULT" " found no PSVM as expected." && \
     echo -n "  Cleaning up..." && rm -rf temp $JFN && echo " done."
 }
@@ -117,7 +117,7 @@ function run_test_06 {
     echo -n "  Compiling source.java using JVMCH..." && mkdir temp && \
     local RESULT=`expect_exit_code 1 java -jar ../$JAR \
         compile-java-files temp $JFN source.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN` && \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN` && \
     assert_contains "$CLASS_INTERFACE_OR_ENUM_EXPECTED" "$RESULT" " found no sources as expected." && \
     echo -n "  Cleaning up..." && rm -rf temp $JFN && echo " done."
 }
@@ -129,7 +129,7 @@ function run_test_07 {
     echo -n "  Compiling source.java using JVMCH..." && \
     local RESULT=`expect_exit_code 1 java -jar ../$JAR \
         compile-java-files temp $JFN source.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN` && \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN` && \
     assert_contains "$UNMAPPABLE_CHARACTER" "$RESULT" " found no sources as expected." && \
     echo -n "  Cleaning up..." && rm -rf temp $JFN && echo " done."
 }
@@ -141,7 +141,7 @@ function run_test_08 {
     echo -n "  Compiling [data.java main.java] using JVMCH..." && \
     java -jar ../$JAR \
         compile-java-files temp $JFN data.java main.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
         && echo " done." && \
     echo -n "  Running the result... " && local RESULT=`java -jar $JFN` && \
     local EXPECTED=`echo "10"` && assert_equals "$EXPECTED" "$RESULT" "prints 10 as expected" && \
@@ -155,7 +155,7 @@ function run_test_09 {
     echo -n "  Compiling [data.java main.java] using JVMCH..." && \
     java -jar ../$JAR \
         compile-java-files temp $JFN data.java main.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
         && echo " done." && \
     echo -n "  Running the result... " && local RESULT=`java -jar $JFN` && \
     local EXPECTED=`echo "10"` && assert_equals "$EXPECTED" "$RESULT" "prints 10 as expected" && \
@@ -169,7 +169,7 @@ function run_test_10 {
     echo -n "  Compiling [nontrivial/location/data.java main.java] using JVMCH..." && \
     java -jar ../$JAR \
         compile-java-files temp $JFN nontrivial/location/data.java main.java \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
         && echo " done." && \
     echo -n "  Running the result... " && local RESULT=`java -jar $JFN` && \
     local EXPECTED=`echo "10"` && assert_equals "$EXPECTED" "$RESULT" "prints 10 as expected" && \
@@ -212,9 +212,9 @@ function run_test_12 {
     echo -n "  Compiling everything using JVMCH..." && \
     java -jar ../$JAR \
         compile-java-files temp $JFN1 data.java \
-        \# compile-java-files temp $JFN2 main.java \
-        \# merge-jar-files $JFN $JFN1 $JFN2 \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        --then compile-java-files temp $JFN2 main.java \
+        --then merge-jar-files $JFN $JFN1 $JFN2 \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
         && echo " done." && \
     echo -n "  Running the result... " && local RESULT=`java -jar $JFN` && \
     local EXPECTED=`echo "10"` && assert_equals "$EXPECTED" "$RESULT" "prints 10 as expected" && \
@@ -230,9 +230,9 @@ function run_test_13 {
     echo -n "  Compiling everything using JVMCH..." && \
     java -jar ../$JAR \
         compile-java-files temp $JFN1 \
-        \# compile-java-files temp $JFN2 aplusb.java \
-        \# merge-jar-files $JFN $JFN1 $JFN2 \
-        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        --then compile-java-files temp $JFN2 aplusb.java \
+        --then merge-jar-files $JFN $JFN1 $JFN2 \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
         && echo " done." && \
     echo -n "  Running the result... " && local RESULT=`echo "4 6" | java -jar $JFN` && \
     local EXPECTED=`echo "10"` && assert_equals "$EXPECTED" "$RESULT" "prints 10 as expected" && \
