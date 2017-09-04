@@ -15,7 +15,7 @@ public class JavaCompiler extends Module {
 
     @Override
     public boolean checkArgs(String[] args, int argumentOffset) {
-        return args.length >= 3;
+        return args.length >= 2;
     }
 
     @Override
@@ -50,13 +50,14 @@ public class JavaCompiler extends Module {
 
     private int compile(File tempDir, File file, File[] sources) {
         try {
-            int exitCode = compile(tempDir, copyFiles(tempDir, sources));
+            int exitCode = sources.length == 0 ? 0 : compile(tempDir, copyFiles(tempDir, sources));
             if (exitCode != 0) {
                 return exitCode;
             }
             List<String> classes = new ArrayList<>();
             findFiles(tempDir, "", ".class", classes);
             createJar(file, tempDir, classes.toArray(new String[classes.size()]));
+            rmrf(tempDir);
             return 0;
         } catch (IOException e) {
             e.printStackTrace();

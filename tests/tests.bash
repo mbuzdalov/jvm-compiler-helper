@@ -221,6 +221,24 @@ function run_test_12 {
     echo -n "  Cleaning up..." && rm -rf temp $JFN $JFN1 $JFN2 && echo " done."
 }
 
+function run_test_13 {
+    local JFN1=jf1.jar
+    local JFN2=jf2.jar
+    local JFN=jf.jar
+    echo "Running test 13 [one jar is empty]..." && \
+    echo -n "  Cleaning up..." && rm -rf temp $JFN $JFN1 $JFN2 && echo " done." && \
+    echo -n "  Compiling everything using JVMCH..." && \
+    java -jar ../$JAR \
+        compile-java-files temp $JFN1 \
+        \# compile-java-files temp $JFN2 aplusb.java \
+        \# merge-jar-files $JFN $JFN1 $JFN2 \
+        \# annotate-jar-with-main-class-attribute $JFN $JFN \
+        && echo " done." && \
+    echo -n "  Running the result... " && local RESULT=`echo "4 6" | java -jar $JFN` && \
+    local EXPECTED=`echo "10"` && assert_equals "$EXPECTED" "$RESULT" "prints 10 as expected" && \
+    echo -n "  Cleaning up..." && rm -rf temp $JFN $JFN1 $JFN2 && echo " done."
+}
+
 function run_tests {
     pushd_silent 01 && run_test_01 && popd_silent && \
     pushd_silent 02 && run_test_02 && popd_silent && \
@@ -233,7 +251,8 @@ function run_tests {
     pushd_silent 09 && run_test_09 && popd_silent && \
     pushd_silent 10 && run_test_10 && popd_silent && \
     pushd_silent 11 && run_test_11 && popd_silent && \
-    pushd_silent 12 && run_test_12 && popd_silent
+    pushd_silent 12 && run_test_12 && popd_silent && \
+    pushd_silent 13 && run_test_13 && popd_silent
 }
 
 pushd_silent .. && \
