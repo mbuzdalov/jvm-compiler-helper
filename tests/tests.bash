@@ -239,6 +239,20 @@ function run_test_13 {
     echo -n "  Cleaning up..." && rm -rf temp $JFN $JFN1 $JFN2 && echo " done."
 }
 
+function run_test_14 {
+    local JFN=jarfilename.jar
+    echo "Running test 14 [double and long in the constant pool]..." && \
+    echo -n "  Cleaning up..." && rm -rf temp $JFN && echo " done." && \
+    echo -n "  Compiling doubletest.java using JVMCH..." && \
+    java -jar ../$JAR \
+        compile-java-files temp $JFN doubletest.java \
+        --then annotate-jar-with-main-class-attribute $JFN $JFN \
+        && echo " done." && \
+    echo -n "  Running the result... " && local RESULT=`java -jar $JFN` && \
+    local EXPECTED=`echo "5.25"` && assert_equals "$EXPECTED" "$RESULT" "prints 5.25 as expected" && \
+    echo -n "  Cleaning up..." && rm -rf temp $JFN && echo " done."
+}
+
 function run_tests {
     pushd_silent 01 && run_test_01 && popd_silent && \
     pushd_silent 02 && run_test_02 && popd_silent && \
@@ -252,7 +266,8 @@ function run_tests {
     pushd_silent 10 && run_test_10 && popd_silent && \
     pushd_silent 11 && run_test_11 && popd_silent && \
     pushd_silent 12 && run_test_12 && popd_silent && \
-    pushd_silent 13 && run_test_13 && popd_silent
+    pushd_silent 13 && run_test_13 && popd_silent && \
+    pushd_silent 14 && run_test_14 && popd_silent
 }
 
 pushd_silent .. && \

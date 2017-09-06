@@ -65,7 +65,13 @@ public class MainClassJarAnnotator extends Module {
         }
     }
 
-    private boolean isMainClass(InputStream stream) {
+    private static class SeriousException extends Exception {
+        public SeriousException(String message) {
+            super(message);
+        }
+    }
+
+    private boolean isMainClass(InputStream stream) throws IOException {
         try {
             DataInputStream ds = new DataInputStream(stream);
             if (ds.readInt() != 0xCAFEBABE) {
@@ -92,6 +98,7 @@ public class MainClassJarAnnotator extends Module {
                     case 5: // Long
                     case 6: // Double
                         ds.readLong();
+                        ++i; // these two take up TWO SLOTS!
                         break;
                     case 7: // Class
                     case 8: // String
@@ -111,7 +118,8 @@ public class MainClassJarAnnotator extends Module {
                         ds.readUnsignedShort();
                         break;
                     default:
-                        return false;
+                        throw new SeriousException("Unknown JVM constant pool tag: " + tag
+                                + ". Please notify the course administrator.");
                 }
             }
             ds.readUnsignedShort(); // access flags
@@ -165,6 +173,8 @@ public class MainClassJarAnnotator extends Module {
             return hasMainMethod;
         } catch (IOException ex) {
             return false;
+        } catch (SeriousException ex) {
+            throw new IOException(ex.getMessage());
         }
     }
 
