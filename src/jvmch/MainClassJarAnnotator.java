@@ -103,12 +103,15 @@ public class MainClassJarAnnotator extends Module {
                     case 7: // Class
                     case 8: // String
                     case 16: // Method type
+                    case 19: // Module, Java 9
+                    case 20: // Package, Java 9
                         ds.readUnsignedShort();
                         break;
                     case 9: // Field reference
                     case 10: // Method reference
                     case 11: // Interface method reference
                     case 12: // Name and type
+                    case 17: // Dynamic, Java 11
                     case 18: // Invoke dynamic
                         ds.readUnsignedShort();
                         ds.readUnsignedShort();
