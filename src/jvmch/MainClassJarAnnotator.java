@@ -14,8 +14,9 @@ import java.util.jar.*;
 public class MainClassJarAnnotator extends Module {
     private static final String FORCE_OVERWRITE = "--force-overwrite";
     private static final String USE_FIRST = "--use-first";
+    private static final String VERBOSE = "--verbose";
 
-    private static final Set<String> possibleExtraArgs = new HashSet<>(Arrays.asList(FORCE_OVERWRITE, USE_FIRST));
+    private static final Set<String> possibleExtraArgs = new HashSet<>(Arrays.asList(FORCE_OVERWRITE, USE_FIRST, VERBOSE));
 
     @Override
     public boolean checkArgs(String[] args, int argumentOffset) {
@@ -46,12 +47,13 @@ public class MainClassJarAnnotator extends Module {
 
     @Override
     public String getUsage() {
-        return "annotates the given JAR file with a Main-Class attribute. The arguments are\n"
-                + "        <source-jar-name> <target-jar-name> [" + FORCE_OVERWRITE + "] [" + USE_FIRST + "], where:\n"
-                + "            <source-jar-name> is the path to the JAR file to be read;\n"
-                + "            <target-jar-name> is the path to the JAR file to be created;\n"
-                + "            " + FORCE_OVERWRITE + " means to overwrite the existing Main-Class attribute;\n"
-                + "            " + USE_FIRST + " means to use the first main class when multiple ones are found.";
+        return "annotates the given JAR file with a Main-Class attribute.\n"
+                + "            The arguments are: <source-jar-name> <target-jar-name> [" + FORCE_OVERWRITE + "] [" + USE_FIRST + "] [" + VERBOSE + "], where:\n"
+                + "                <source-jar-name> is the path to the JAR file to be read;\n"
+                + "                <target-jar-name> is the path to the JAR file to be created;\n"
+                + "                " + FORCE_OVERWRITE + " means to overwrite the existing Main-Class attribute;\n"
+                + "                " + USE_FIRST + " means to use the first main class when multiple ones are found;\n"
+                + "                " + VERBOSE + " enables printing non-error messages to the standard output.";
     }
 
     private String getName(JarEntry entry) {
@@ -63,7 +65,13 @@ public class MainClassJarAnnotator extends Module {
         }
     }
 
-    private boolean isMainClass(InputStream stream) {
+    private static class SeriousException extends Exception {
+        public SeriousException(String message) {
+            super(message);
+        }
+    }
+
+    private boolean isMainClass(InputStream stream) throws IOException {
         try {
             DataInputStream ds = new DataInputStream(stream);
             if (ds.readInt() != 0xCAFEBABE) {
@@ -90,16 +98,20 @@ public class MainClassJarAnnotator extends Module {
                     case 5: // Long
                     case 6: // Double
                         ds.readLong();
+                        ++i; // these two take up TWO SLOTS!
                         break;
                     case 7: // Class
                     case 8: // String
                     case 16: // Method type
+                    case 19: // Module, Java 9
+                    case 20: // Package, Java 9
                         ds.readUnsignedShort();
                         break;
                     case 9: // Field reference
                     case 10: // Method reference
                     case 11: // Interface method reference
                     case 12: // Name and type
+                    case 17: // Dynamic, Java 11
                     case 18: // Invoke dynamic
                         ds.readUnsignedShort();
                         ds.readUnsignedShort();
@@ -109,7 +121,8 @@ public class MainClassJarAnnotator extends Module {
                         ds.readUnsignedShort();
                         break;
                     default:
-                        return false;
+                        throw new SeriousException("Unknown JVM constant pool tag: " + tag
+                                + ". Please notify the course administrator.");
                 }
             }
             ds.readUnsignedShort(); // access flags
@@ -163,6 +176,8 @@ public class MainClassJarAnnotator extends Module {
             return hasMainMethod;
         } catch (IOException ex) {
             return false;
+        } catch (SeriousException ex) {
+            throw new IOException(ex.getMessage());
         }
     }
 
@@ -173,9 +188,11 @@ public class MainClassJarAnnotator extends Module {
             String targetJarFileName = args[1];
             boolean forceOverwrite = false;
             boolean useFirst = false;
+            boolean verbose = false;
             for (int i = 2; i < args.length; ++i) {
                 forceOverwrite |= args[i].equals(FORCE_OVERWRITE);
                 useFirst |= args[i].equals(USE_FIRST);
+                verbose |= args[i].equals(VERBOSE);
             }
 
             byte[] jarFile = Files.readAllBytes(Paths.get(sourceJarFileName));
@@ -187,7 +204,9 @@ public class MainClassJarAnnotator extends Module {
                     Attributes attributes = manifest.getMainAttributes();
                     String ofMain = attributes.getValue(Attributes.Name.MAIN_CLASS);
                     if (ofMain != null && !forceOverwrite) {
-                        System.out.println("This file already has Main-Class set to " + ofMain);
+                        if (verbose) {
+                            System.out.println("This file already has Main-Class set to " + ofMain);
+                        }
                         // No --force-overwrite is specified.
                         Files.copy(Paths.get(sourceJarFileName), Paths.get(targetJarFileName));
                         return true;
@@ -219,7 +238,9 @@ public class MainClassJarAnnotator extends Module {
             if (manifest == null) {
                 manifest = new Manifest();
             }
-            System.out.println("Setting the Main-Class attribute to " + mainClassName);
+            if (verbose) {
+                System.out.println("Setting the Main-Class attribute to " + mainClassName);
+            }
             manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
             manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, mainClassName);
 
@@ -241,8 +262,7 @@ public class MainClassJarAnnotator extends Module {
             }
             return true;
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            System.err.println(e.getMessage());
             return false;
         }
     }
